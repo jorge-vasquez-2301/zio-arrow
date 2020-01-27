@@ -23,6 +23,7 @@ inThisBuild(
 )
 
 ThisBuild / publishTo := sonatypePublishToBundle.value
+Compile / unmanagedSourceDirectories += baseDirectory.value / "it"
 
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
