@@ -1,3 +1,6 @@
+import sbt._
+import Keys._
+
 import BuildHelper._
 
 inThisBuild(
@@ -23,6 +26,7 @@ inThisBuild(
 )
 
 ThisBuild / publishTo := sonatypePublishToBundle.value
+unmanagedResourceDirectories in (Compile, runMain) += baseDirectory(_ / "it").value
 
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
@@ -42,7 +46,7 @@ lazy val root =
       stdSettings("zio-arrow")
     )
     .settings(buildInfoSettings("zio-arrow"))
-    .enablePlugins(BuildInfoPlugin)
+//.enablePlugins(BuildInfoPlugin)
 
 lazy val docs = project
   .in(file("zio-arrow-docs"))
