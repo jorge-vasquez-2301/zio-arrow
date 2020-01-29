@@ -2,7 +2,7 @@ package zio.arrow.example
 
 import zio._
 
-object App0 extends App {
+object Hello extends App {
 
   val f = (_: Int) + 1
   val g = (_: Int) * 2

@@ -26,7 +26,8 @@ inThisBuild(
 )
 
 ThisBuild / publishTo := sonatypePublishToBundle.value
-unmanagedResourceDirectories in (Compile, runMain) += baseDirectory(_ / "it").value
+
+unmanagedSourceDirectories in (Compile, runMain) += baseDirectory.value / "src" / "it"
 
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
@@ -40,13 +41,19 @@ libraryDependencies ++= Seq(
 
 testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
 
+val graphVersion = "1.13.2"
+lazy val graphDeps = libraryDependencies ++= Seq(
+  "org.scala-graph" %% "graph-core" % graphVersion
+)
+
 lazy val root =
   (project in file("."))
     .settings(
-      stdSettings("zio-arrow")
+      stdSettings("zio-arrow"),
+      graphDeps
     )
-    .settings(buildInfoSettings("zio-arrow"))
-//.enablePlugins(BuildInfoPlugin)
+    .settings(buildInfoSettings("zio.arrow"))
+    .enablePlugins(BuildInfoPlugin)
 
 lazy val docs = project
   .in(file("zio-arrow-docs"))
