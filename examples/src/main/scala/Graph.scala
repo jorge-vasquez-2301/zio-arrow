@@ -1,7 +1,7 @@
-package zio.arrow.example
+package zio.arrow
+package examples
 
-import zio.arrow._
-import zio.{ App }
+import zio._
 import zio.console.putStrLn
 import scalax.collection.Graph
 import scalax.collection.GraphPredef._
@@ -14,7 +14,7 @@ case class MyEdge(
   val nodeTo: MyNode
 ) extends DiEdge(NodeProduct(nodeFrom, nodeTo))
 
-object App0 extends App {
+object GraphApp extends App {
 
   def run(args: List[String]) = (prog1 >>= (v => putStrLn(v.toString))).as(0)
 

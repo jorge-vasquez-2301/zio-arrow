@@ -1,4 +1,5 @@
-package zio.arrow.example
+package zio.arrow
+package examples
 
 import zio._
 
@@ -12,7 +13,7 @@ object Hello extends App {
   val arrG = ZArrow.fromFunction(g)
   val arrH = ZArrow.fromFunction(h)
 
-  val arrows = List(arrF, arrG, arrH)
+  val arrows   = List(arrF, arrG, arrH)
   val composed = arrows.foldLeft(ZArrow.identity[Int])(_ >>> _)
 
   val prog0 = composed.run(10)
