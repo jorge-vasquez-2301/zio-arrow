@@ -99,7 +99,7 @@ sealed trait ZArrow[+E, -A, +B] extends Serializable { self =>
   /**
    * Maps the output of this effectful function by the specified function.
    */
-  final def map[C](f: B => C): ZArrow[E, A, C] = self >>> ZArrow.fromFunction(f)
+  final def map[C](f: B => C): ZArrow[E, A, C] = self >>> ZArrow.lift(f)
 
   /**
    * Binds on the output of this effectful function.
@@ -189,7 +189,7 @@ sealed trait ZArrow[+E, -A, +B] extends Serializable { self =>
    * Maps the output of this effectful function to the specified constant.
    */
   final def as[C](c: => C): ZArrow[E, A, C] =
-    self >>> ZArrow.fromFunction[B, C](_ => c)
+    self >>> ZArrow.lift[B, C](_ => c)
 
   /**
    * Maps the output of this effectful function to `Unit`.
@@ -222,7 +222,7 @@ object ZArrow extends Serializable {
   /**
    * Lifts a value into the monad formed by `ZArrow`.
    */
-  def succeed[B](b: B): ZArrow[Nothing, Any, B] = fromFunction((_: Any) => b)
+  def succeed[B](b: B): ZArrow[Nothing, Any, B] = lift((_: Any) => b)
 
   /**
    * Returns a `ZArrow` representing a failure with the specified `E`.
@@ -234,23 +234,23 @@ object ZArrow extends Serializable {
    * Returns the identity effectful function, which performs no effects and
    * merely returns its input unmodified.
    */
-  def identity[A]: ZArrow[Nothing, A, A] = fromFunction(a => a)
+  def identity[A]: ZArrow[Nothing, A, A] = lift(a => a)
 
   /**
    * Lifts a pure `A => IO[E, B]` into `ZArrow`.
    */
-  def fromFunctionM[E, A, B](f: A => IO[E, B]): ZArrow[E, A, B] = new Pure(f)
+  def liftM[E, A, B](f: A => IO[E, B]): ZArrow[E, A, B] = new Pure(f)
 
   /**
    * Lifts a pure `A => B` into `ZArrow`.
    */
-  def fromFunction[A, B](f: A => B): ZArrow[Nothing, A, B] = new Impure(f)
+  def lift[A, B](f: A => B): ZArrow[Nothing, A, B] = new Impure(f)
 
   /**
    * Returns an effectful function that merely swaps the elements in a `Tuple2`.
    */
   def swap[E, A, B]: ZArrow[E, (A, B), (B, A)] =
-    ZArrow.fromFunction[(A, B), (B, A)](_.swap)
+    ZArrow.lift[(A, B), (B, A)](_.swap)
 
   /**
    * Lifts an impure function into `ZArrow`, converting throwables into the
@@ -279,7 +279,7 @@ object ZArrow extends Serializable {
    */
   def test[E, A](k: ZArrow[E, A, Boolean]): ZArrow[E, A, Either[A, A]] =
     (k &&& ZArrow.identity[A]) >>>
-      ZArrow.fromFunction((t: (Boolean, A)) => if (t._1) Left(t._2) else Right(t._2))
+      ZArrow.lift((t: (Boolean, A)) => if (t._1) Left(t._2) else Right(t._2))
 
   /**
    * Returns a new effectful function that passes an `A` to the condition, and
@@ -343,7 +343,7 @@ object ZArrow extends Serializable {
 
       case _ =>
         lazy val loop: ZArrow[E, A, A] =
-          ZArrow.fromFunctionM((a: A) =>
+          ZArrow.liftM((a: A) =>
             check.run(a).flatMap((b: Boolean) => if (b) body.run(a).flatMap(loop.run) else IO.succeed(a))
           )
 
@@ -354,13 +354,13 @@ object ZArrow extends Serializable {
    * Returns an effectful function that extracts out the first element of a
    * tuple.
    */
-  def _1[E, A, B]: ZArrow[E, (A, B), A] = fromFunction[(A, B), A](_._1)
+  def _1[E, A, B]: ZArrow[E, (A, B), A] = lift[(A, B), A](_._1)
 
   /**
    * Returns an effectful function that extracts out the second element of a
    * tuple.
    */
-  def _2[E, A, B]: ZArrow[E, (A, B), B] = fromFunction[(A, B), B](_._2)
+  def _2[E, A, B]: ZArrow[E, (A, B), B] = lift[(A, B), B](_._2)
 
   /**
    * See @ZArrow.flatMap
@@ -396,7 +396,7 @@ object ZArrow extends Serializable {
         })
 
       case _ =>
-        ZArrow.fromFunctionM((a: A) =>
+        ZArrow.liftM((a: A) =>
           for {
             b <- l.run(a)
             c <- r.run(a)
@@ -415,7 +415,7 @@ object ZArrow extends Serializable {
           case Right(c) => Right(c)
         })
       case _ =>
-        ZArrow.fromFunctionM[E, Either[A, C], Either[B, C]] {
+        ZArrow.liftM[E, Either[A, C], Either[B, C]] {
           case Left(a)  => k.run(a).map[Either[B, C]](Left[B, C])
           case Right(c) => IO.succeed[Either[B, C]](Right(c))
         }
@@ -432,7 +432,7 @@ object ZArrow extends Serializable {
           case Right(a) => Right(k.apply0(a))
         })
       case _ =>
-        ZArrow.fromFunctionM[E, Either[C, A], Either[C, B]] {
+        ZArrow.liftM[E, Either[C, A], Either[C, B]] {
           case Left(c)  => IO.succeed[Either[C, B]](Left(c))
           case Right(a) => k.run(a).map[Either[C, B]](Right[C, B])
         }
@@ -450,7 +450,7 @@ object ZArrow extends Serializable {
         })
 
       case _ =>
-        ZArrow.fromFunctionM[E, Either[A, C], B]({
+        ZArrow.liftM[E, Either[A, C], B]({
           case Left(a)  => l.run(a)
           case Right(c) => r.run(c)
         })

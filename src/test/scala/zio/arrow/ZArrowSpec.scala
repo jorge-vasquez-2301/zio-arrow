@@ -11,7 +11,7 @@ object ZArrowSpec
     extends ZIOBaseSpec(
       suite("ZArrowSpec")(
         suite("Check if the functions in `ZArrow` work correctly")(
-          testM("`fromFunction` lifts from A => B into effectful function") {
+          testM("`lift` lifts from A => B into effectful function") {
             assertM(add1.run(4), equalTo(5))
           },
           testM("`identity` returns the identity of the input without modification") {
@@ -63,7 +63,7 @@ object ZArrowSpec
           ),
           testM("`test` check a condition and returns an Either output: Left if the condition is true otherwise false") {
             val tester =
-              ZArrow.test(fromFunction[List[Int], Boolean](_.sum > 10))
+              ZArrow.test(lift[List[Int], Boolean](_.sum > 10))
 
             for {
               v1 <- tester.run(List(1, 2, 5))
@@ -84,7 +84,7 @@ object ZArrowSpec
             testM(
               "check a pure condition if it is true then computes an effectful function `then0` else computes `else0`"
             ) {
-              val greaterThan0M = fromFunctionM[Nothing, Int, Boolean](a => IO.succeed(a > 0))
+              val greaterThan0M = liftM[Nothing, Int, Boolean](a => IO.succeed(a > 0))
               val checker       = ifThenElse(greaterThan0M)(succeed("is positive"))(succeed("is negative"))
 
               for {
@@ -100,8 +100,8 @@ object ZArrowSpec
             testM(
               "take a condition and run the body until the condition will be  false with pure function"
             ) {
-              val lestThan10M = fromFunctionM[Nothing, Int, Boolean](a => IO.succeed[Boolean](a < 10))
-              val add1M       = fromFunctionM[Nothing, Int, Int](a => IO.effectTotal[Int](a + 1))
+              val lestThan10M = liftM[Nothing, Int, Boolean](a => IO.succeed[Boolean](a < 10))
+              val add1M       = liftM[Nothing, Int, Int](a => IO.effectTotal[Int](a + 1))
 
               assertM(whileDo[Nothing, Int](lestThan10M)(add1M).run(1), equalTo(10))
             }
@@ -127,11 +127,11 @@ object ZArrowSpec
 
 object ZArrowSpecUtil {
 
-  val add1: ZArrow[Nothing, Int, Int] = ZArrow.fromFunction(_ + 1)
-  val mul2: ZArrow[Nothing, Int, Int] = ZArrow.fromFunction(_ * 2)
+  val add1: ZArrow[Nothing, Int, Int] = ZArrow.lift(_ + 1)
+  val mul2: ZArrow[Nothing, Int, Int] = ZArrow.lift(_ * 2)
 
-  val greaterThan0 = fromFunction[Int, Boolean](_ > 0)
-  val lessThan10   = fromFunction[Int, Boolean](_ < 10)
+  val greaterThan0 = lift[Int, Boolean](_ > 0)
+  val lessThan10   = lift[Int, Boolean](_ < 10)
 
   val thrower = effect[String, Int, Int] { case _: Throwable => "error" }(_ => throw new Exception)
 }

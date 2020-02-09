@@ -9,9 +9,9 @@ object Hello extends App {
   val g = (_: Int) * 2
   val h = (_: Int) - 3
 
-  val arrF = ZArrow.fromFunction(f)
-  val arrG = ZArrow.fromFunction(g)
-  val arrH = ZArrow.fromFunction(h)
+  val arrF = ZArrow.lift(f)
+  val arrG = ZArrow.lift(g)
+  val arrH = ZArrow.lift(h)
 
   val arrows   = List(arrF, arrG, arrH)
   val composed = arrows.foldLeft(ZArrow.identity[Int])(_ >>> _)
