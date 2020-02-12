@@ -73,4 +73,4 @@ lazy val docs = project
 addCommandAlias("com", "compile")
 addCommandAlias("rel", "reload")
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
-addCommandAlias("chk", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
+addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
