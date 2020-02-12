@@ -241,10 +241,16 @@ object ZArrow extends Serializable {
    */
   def liftM[E, A, B](f: A => IO[E, B]): ZArrow[E, A, B] = new Pure(f)
 
+  // Alias to liftM
+  def fromFunctionM[E, A, B](f: A => IO[E, B]): ZArrow[E, A, B] = liftM(f)
+
   /**
    * Lifts a pure `A => B` into `ZArrow`.
    */
   def lift[A, B](f: A => B): ZArrow[Nothing, A, B] = new Impure(f)
+
+  // Alias to lift
+  def fromFunction[A, B](f: A => B): ZArrow[Nothing, A, B] = lift(f)
 
   /**
    * Returns an effectful function that merely swaps the elements in a `Tuple2`.
