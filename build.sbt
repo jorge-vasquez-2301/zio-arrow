@@ -26,10 +26,6 @@ inThisBuild(
 )
 
 ThisBuild / publishTo := sonatypePublishToBundle.value
-unmanagedResourceDirectories in (Compile, runMain) += baseDirectory(_ / "it").value
-
-addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
-addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
 
 val zioVersion = "1.0.0-RC17"
 libraryDependencies ++= Seq(
@@ -40,13 +36,20 @@ libraryDependencies ++= Seq(
 
 testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
 
-lazy val root =
-  (project in file("."))
-    .settings(
-      stdSettings("zio-arrow")
-    )
-    .settings(buildInfoSettings("zio-arrow"))
-//.enablePlugins(BuildInfoPlugin)
+lazy val root = (project in file("."))
+  .settings(stdSettings("zio-arrow"))
+  .settings(buildInfoSettings("zio-arrow"))
+  // .enablePlugins(BuildInfoPlugin)
+
+lazy val graphDeps = libraryDependencies ++= Seq(
+  "org.scala-graph" %% "graph-core" % "1.13.2"
+)
+
+lazy val examples = (project in file("examples"))
+  .settings(stdSettings("examples"))
+  .settings(buildInfoSettings("examples"))
+  .settings(graphDeps)
+  .dependsOn(root)
 
 lazy val docs = project
   .in(file("zio-arrow-docs"))
@@ -66,3 +69,8 @@ lazy val docs = project
   )
   .dependsOn(root)
   .enablePlugins(MdocPlugin, DocusaurusPlugin, ScalaUnidocPlugin)
+
+addCommandAlias("com", "compile")
+addCommandAlias("rel", "reload")
+addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
+addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")

@@ -1,8 +1,9 @@
-package zio.arrow.example
+package zio.arrow
+package examples
 
 import zio._
 
-object App0 extends App {
+object Hello extends App {
 
   val f = (_: Int) + 1
   val g = (_: Int) * 2
@@ -12,7 +13,7 @@ object App0 extends App {
   val arrG = ZArrow.fromFunction(g)
   val arrH = ZArrow.fromFunction(h)
 
-  val arrows = List(arrF, arrG, arrH)
+  val arrows   = List(arrF, arrG, arrH)
   val composed = arrows.foldLeft(ZArrow.identity[Int])(_ >>> _)
 
   val prog0 = composed.run(10)
