@@ -39,7 +39,7 @@ testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
 lazy val root = (project in file("."))
   .settings(stdSettings("zio-arrow"))
   .settings(buildInfoSettings("zio-arrow"))
-//.enablePlugins(BuildInfoPlugin)
+  // .enablePlugins(BuildInfoPlugin)
 
 lazy val graphDeps = libraryDependencies ++= Seq(
   "org.scala-graph" %% "graph-core" % "1.13.2"
@@ -73,4 +73,4 @@ lazy val docs = project
 addCommandAlias("com", "compile")
 addCommandAlias("rel", "reload")
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
-addCommandAlias("chk", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
+addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
