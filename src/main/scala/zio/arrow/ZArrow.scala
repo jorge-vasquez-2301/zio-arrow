@@ -204,6 +204,9 @@ sealed trait ZArrow[+E, -A, +B] extends Serializable { self =>
 }
 
 object ZArrow extends Serializable {
+
+  def apply[E, A, B](f: A => B): ZArrow[E, A, B] = lift(f)
+
   private class ZArrowError[E](error: E) extends Throwable {
     final def unsafeCoerce[E2] = error.asInstanceOf[E2]
   }

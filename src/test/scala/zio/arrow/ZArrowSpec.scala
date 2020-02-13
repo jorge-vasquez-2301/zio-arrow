@@ -11,6 +11,10 @@ object ZArrowSpec
     extends ZIOBaseSpec(
       suite("ZArrowSpec")(
         suite("Check if the functions in `ZArrow` work correctly")(
+          testM("`apply` lifts from A => B into effectful function") {
+            val arr = ZArrow(plusOne)
+            assertM(arr.run(4), equalTo(5))
+          },
           testM("`lift` lifts from A => B into effectful function") {
             assertM(add1.run(4), equalTo(5))
           },
@@ -127,8 +131,11 @@ object ZArrowSpec
 
 object ZArrowSpecUtil {
 
-  val add1: ZArrow[Nothing, Int, Int] = ZArrow.lift(_ + 1)
-  val mul2: ZArrow[Nothing, Int, Int] = ZArrow.lift(_ * 2)
+  val plusOne = (_: Int) + 1
+  val mulTwo  = (_: Int) * 2
+
+  val add1: ZArrow[Nothing, Int, Int] = ZArrow.lift(plusOne)
+  val mul2: ZArrow[Nothing, Int, Int] = ZArrow.lift(mulTwo)
 
   val greaterThan0 = lift[Int, Boolean](_ > 0)
   val lessThan10   = lift[Int, Boolean](_ < 10)

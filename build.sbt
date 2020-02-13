@@ -39,7 +39,7 @@ testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
 lazy val root = (project in file("."))
   .settings(stdSettings("zio-arrow"))
   .settings(buildInfoSettings("zio-arrow"))
-  // .enablePlugins(BuildInfoPlugin)
+// .enablePlugins(BuildInfoPlugin)
 
 lazy val graphDeps = libraryDependencies ++= Seq(
   "org.scala-graph" %% "graph-core" % "1.13.2"
