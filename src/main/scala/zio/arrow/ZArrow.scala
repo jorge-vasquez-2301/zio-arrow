@@ -159,9 +159,13 @@ sealed trait ZArrow[+E, -A, +B] extends Serializable { self =>
   final def second[A1 <: A, B1 >: B]: ZArrow[E, A1, (A1, B1)] =
     ZArrow.identity[A1] &&& self
 
-  // final def merge[A1 <: A, B1 >: B](that: ZArrow[E, A1, B1]) = ???
-  // final def merge[E1 >: E, A1 <: A, B1 >: B](that: ZArrow[E1, A1, B1]) = self.first >>> that.second
-  // final def split[E1 >: E, A1 <: A, B1 >: B](that: ZArrow[E1, A1, B1]) = that.first >>> self.second
+  /**
+   * Returns a new effectful function that splits its input between `f` and `g`
+   * and combines their output
+   */
+  final def split[E1 >: E, A1 <: A, C, B1 >: B, D](that: ZArrow[E1, A1, D]) = self.first >>> that.second
+
+  final def ***[E1 >: E, A1 <: A, C, B1 >: B, D](that: ZArrow[E1, A1, D]) = split(that)
 
   /**
    * Returns a new effectful function that can either compute the value of this
