@@ -47,6 +47,7 @@ object BenchUtils {
    * This performs IO to read the file, gets a value and calculates a `factorial` for that value
    */
   def worker(file: String): Int = {
+    println("Inside a worker")
     // this reads a value from file
     val seed = rdFile(file).fold(0)(data => data.toInt)
 
@@ -71,6 +72,20 @@ object BenchUtils {
    */
   val arrWorkers = files.foldLeft(ZArrow.identity[Int]) {
     case (acc, item) => acc >>> ZArrow.lift(_ => worker(item._1))
+  }
+
+  def time[R](block: => R): R = {
+    import java.util.concurrent.TimeUnit
+
+    val t0        = System.nanoTime()
+    val result    = block // call-by-name
+    val runtimeNs = System.nanoTime - t0
+    val runtimeUs = TimeUnit.MICROSECONDS.convert(runtimeNs, TimeUnit.NANOSECONDS)
+    val runtimeMs = TimeUnit.MILLISECONDS.convert(runtimeNs, TimeUnit.NANOSECONDS)
+    println("Elapsed time: " + runtimeNs + "ns")
+    println("Elapsed time: " + runtimeUs + "us")
+    println("Elapsed time: " + runtimeMs + "ms")
+    result
   }
 
 }

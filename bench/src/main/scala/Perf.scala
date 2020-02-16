@@ -2,6 +2,7 @@ package bench
 
 import zio._
 import zio.arrow._
+import zio.duration._
 
 import BenchUtils._
 
@@ -17,7 +18,9 @@ object Perf extends App {
     workers.foreach(println)
     println(sum(workers))
 
-    arrWorkers.run(1)
+    time {
+      arrWorkers.run(1)
+    }
 
     ZIO.effect(clean())
   }
