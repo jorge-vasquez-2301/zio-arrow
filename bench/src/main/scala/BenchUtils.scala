@@ -1,28 +1,19 @@
 package bench
 
 object BenchUtils {
-  import java.nio.file.{ Files, Paths }
 
-  val root  = "/tmp"
-  val bench = "/tmp/bench"
+  val rand = new scala.util.Random
 
-  def createDir(dir: String): Unit = {
-    val dest = root + "/" + dir
-    val path = Paths.get(dest)
+  /**
+   * Generates a random Int from a specific range
+   */
+  def fromRange(start: Int, end: Int) = rand.nextInt((end - start) + 1)
 
-    if (!Files.exists(path))
-      Files.createDirectory(path)
+  /**
+   * Simple non-stack safe factorial function
+   */
+  def fact(n: Int): Int =
+    if (n == 0) return 1
+    else return n * fact(n - 1)
 
-    println("Created dir: " + dest)
-  }
-
-  def createFile(file: String): Unit = {
-    val dest = bench + "/" + file
-    val path = Paths.get(dest)
-
-    if (!Files.exists(path))
-      Files.createFile(path)
-
-    println("Created file: " + dest)
-  }
 }
