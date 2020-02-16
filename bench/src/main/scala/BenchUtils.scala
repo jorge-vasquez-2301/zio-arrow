@@ -1,5 +1,7 @@
 package bench
 
+import zio.arrow._
+
 import FileUtils._
 
 object BenchUtils {
@@ -48,5 +50,18 @@ object BenchUtils {
     val seed = rdFile(file).fold(0)(data => data.toInt)
     factorial(seed)
   }
+
+  val workers = files.map(f => worker(f._1))
+
+  /**
+   * Calculates the total value from all workers
+   */
+  def sum(list: List[Int]): Int = list.foldLeft(0) { case (acc, item) => acc + item }
+
+  /**
+   * ZIO Arrow worker
+   */
+  val arrWorker  = ZArrow.lift(worker)
+  // val arrWorkers = files.map(f => arrWorker(f._1))
 
 }
