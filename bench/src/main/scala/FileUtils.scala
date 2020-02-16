@@ -4,7 +4,7 @@ object FileUtils {
   import java.nio.file.{ Files, Paths }
 
   val root  = "/tmp"
-  val bench = "/tmp/bench"
+  val bench = "/tmp/bench/"
 
   def newDir(dir: String): Unit = {
     val dest = root + "/" + dir
@@ -17,7 +17,7 @@ object FileUtils {
   }
 
   def newFile(file: String): Unit = {
-    val dest = bench + "/" + file
+    val dest = bench + file
     val path = Paths.get(dest)
 
     if (!Files.exists(path))
@@ -26,7 +26,7 @@ object FileUtils {
   }
 
   def wrFile(file: String, data: String): Unit = {
-    val dest = bench + "/" + file
+    val dest = bench + file
     val path = Paths.get(dest)
 
     if (Files.exists(path))
@@ -34,7 +34,7 @@ object FileUtils {
   }
 
   def rdFile(file: String): Option[String] = {
-    val dest = bench + "/" + file
+    val dest = bench + file
     val path = Paths.get(dest)
 
     Files.exists(path) match {
@@ -44,7 +44,7 @@ object FileUtils {
   }
 
   def delFile(file: String): Unit = {
-    val dest = bench + "/" + file
+    val dest = bench + file
     val path = Paths.get(dest)
     Files.deleteIfExists(path)
   }

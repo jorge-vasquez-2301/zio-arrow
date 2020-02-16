@@ -1,7 +1,8 @@
 package bench
 
-import zio.arrow._
+import java.util.concurrent.TimeUnit
 
+import zio.arrow._
 import FileUtils._
 
 object BenchUtils {
@@ -47,7 +48,7 @@ object BenchUtils {
    * This performs IO to read the file, gets a value and calculates a `factorial` for that value
    */
   def worker(file: String): Int = {
-    println("Inside a worker")
+    // println("Inside a worker")
     // this reads a value from file
     val seed = rdFile(file).fold(0)(data => data.toInt)
 
@@ -75,17 +76,22 @@ object BenchUtils {
   }
 
   def time[R](block: => R): R = {
-    import java.util.concurrent.TimeUnit
 
     val t0        = System.nanoTime()
     val result    = block // call-by-name
     val runtimeNs = System.nanoTime - t0
     val runtimeUs = TimeUnit.MICROSECONDS.convert(runtimeNs, TimeUnit.NANOSECONDS)
-    val runtimeMs = TimeUnit.MILLISECONDS.convert(runtimeNs, TimeUnit.NANOSECONDS)
-    println("Elapsed time: " + runtimeNs + "ns")
+    // val runtimeMs = TimeUnit.MILLISECONDS.convert(runtimeNs, TimeUnit.NANOSECONDS)
+    // println("Elapsed time: " + runtimeNs + "ns")
     println("Elapsed time: " + runtimeUs + "us")
-    println("Elapsed time: " + runtimeMs + "ms")
+    // println("Elapsed time: " + runtimeMs + "ms")
     result
+  }
+
+  def showTime(runtime: Long): Unit = {
+    val runtimeUs = TimeUnit.MICROSECONDS.convert(runtime, TimeUnit.NANOSECONDS)
+    println("Elapsed time: " + runtimeUs + "us" )
+    println()
   }
 
 }
