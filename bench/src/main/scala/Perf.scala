@@ -1,15 +1,25 @@
 package bench
+
+import zio._
+import zio.arrow._
+
 import BenchUtils._
 
 object Perf extends App {
-  setup()
+  def run(args: List[String]) =
+    app.fold(_ => 1, _ => 0)
+  // app.as(0)
 
-  val workers = files.map(f => worker(f._1))
-  // workers.foreach(println)
-  println(sum(workers))
+  val app = {
+    setup()
 
-  val out = arrWorker.run(1.toString)
+    val workers = files.map(f => worker(f._1))
+    workers.foreach(println)
+    println(sum(workers))
 
-  // clean()
+    arrWorkers.run(1)
+
+    ZIO.effect(clean())
+  }
 
 }

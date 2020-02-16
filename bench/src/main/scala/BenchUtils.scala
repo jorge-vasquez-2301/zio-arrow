@@ -61,7 +61,11 @@ object BenchUtils {
   /**
    * ZIO Arrow worker
    */
-  val arrWorker  = ZArrow.lift(worker)
-  // val arrWorkers = files.map(f => arrWorker(f._1))
+  val arrWorker = ZArrow.lift(worker)
+
+  /**
+   * Composed Arrow Workers, which comprise a `worker` output for every file from the input list
+   */
+  val arrWorkers = files.foldLeft(ZArrow.identity[Int]) { case (x, y) => x >>> ZArrow.lift(_ => worker(y._1)) }
 
 }
