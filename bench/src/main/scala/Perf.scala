@@ -25,8 +25,8 @@ object Perf extends zio.App {
 
     val t0 = System.nanoTime
 
-    val workers  = files.map(f => worker(f._1))
-    val sumPlain = workers.sum
+    val workers: List[Int] = files.map(f => worker(f._1))
+    val sumPlain: Int      = workers.sum
 
     val t1 = System.nanoTime
     showTime(t1 - t0)
@@ -37,7 +37,7 @@ object Perf extends zio.App {
 
     val t2 = System.nanoTime
 
-    val sumMon = for {
+    val sumMon: ZIO[Any, Throwable, Int] = for {
       list <- ZIO.traverse(files) { item =>
                ZIO.effect(worker(item._1))
              }
@@ -55,10 +55,10 @@ object Perf extends zio.App {
 
     val t4 = System.nanoTime
 
-    val arrWorkers = files.foldLeft(ZArrow.identity[Int]) {
+    val arrWorkers: ZArrow[Nothing, Int, Int] = files.foldLeft(ZArrow.identity[Int]) {
       case (acc, item) => acc >>> ZArrow.lift(_ => worker(item._1))
     }
-    val sumArr = arrWorkers.run(0)
+    val sumArr: IO[Nothing, Int] = arrWorkers.run(0)
 
     val t5 = System.nanoTime
     showTime(t5 - t4)
