@@ -10,9 +10,18 @@ object BenchUtils {
   val rand = new scala.util.Random
 
   /**
+   * Bench setup
+   */
+  val totalWorkers = 5
+
+  // Random seed range for factorial
+  val minRange = 8
+  val maxRange = 12
+
+  /**
    * Generates a random Int from a specific range
    */
-  def fromRange(start: Int, end: Int) = rand.nextInt((end - start) + 1)
+  def fromRange(start: Int, end: Int) = start + rand.nextInt((end - start) + 1)
 
   /**
    * Simple non-stack safe factorial function
@@ -24,8 +33,7 @@ object BenchUtils {
   /**
    * Prepare test file data
    */
-  val totalWorkers = 5
-  lazy val files   = List.tabulate(totalWorkers)(num => ("file" + num.toString, num.toString))
+  lazy val files = List.tabulate(totalWorkers)(num => ("file" + num.toString, fromRange(minRange, maxRange).toString))
 
   /**
    * Create test files
@@ -90,7 +98,7 @@ object BenchUtils {
 
   def showTime(runtime: Long): Unit = {
     val runtimeUs = TimeUnit.MICROSECONDS.convert(runtime, TimeUnit.NANOSECONDS)
-    println("Elapsed time: " + runtimeUs + "us" )
+    println("Total Runstime: " + runtimeUs + "us")
     println()
   }
 

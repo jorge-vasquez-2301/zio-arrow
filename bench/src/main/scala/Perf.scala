@@ -1,18 +1,25 @@
 package bench
 
-import zio._
+import zio.{ ZIO }
 import zio.arrow._
-import zio.duration._
+import zio.console.putStrLn
 
 import BenchUtils._
 
-object Perf extends App {
+object randTest extends App {
+  val g1 = fromRange(minRange, maxRange)
+  println(g1)
+}
+
+object Perf extends zio.App {
   def run(args: List[String]) =
-    app.fold(_ => 1, _ => 0)
-  // app.as(0)
+    // app.fold(_ => 1, _ => 0)
+    app.as(0)
 
   val app = {
     setup()
+
+    // files.foreach(println)
 
     println("Plain workers run time")
 
@@ -30,15 +37,19 @@ object Perf extends App {
 
     val t2 = System.nanoTime
 
-    val monWorkers = ZIO.traverse(files) { f =>
-      ZIO.effect(worker(f._1))
-    }
-    val sumMon = monWorkers.fold(_ => ZIO.fail("Failed"), data => sum(data))
+    val sumMon = for {
+      list <- ZIO.traverse(files) { item =>
+               ZIO.effect(worker(item._1))
+             }
+      out = sum(list)
+    } yield out
 
     val t3 = System.nanoTime
     showTime(t3 - t2)
 
-    println(s">>>> ZIO sum = ${sumMon}")
+    // ZIO.succeed(println("Hiiiiii"))
+    sumMon >>= (res => putStrLn(res.toString))
+    // sumMon >>= (res => ZIO.succeed(println(res)))
 
     println("ZIO Arrow workers run time")
 
@@ -53,8 +64,9 @@ object Perf extends App {
     showTime(t5 - t4)
 
     println(s">>>> Arrow sum = ${sumArr}")
+    ZIO.succeed(sumArr)
 
-    ZIO.effect(clean())
+    // ZIO.effect(clean())
   }
 
 }
