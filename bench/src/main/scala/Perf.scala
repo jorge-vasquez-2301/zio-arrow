@@ -1,16 +1,12 @@
 package bench
-import FileUtils._
+import BenchUtils._
 
-import scala.jdk.CollectionConverters._
+object Perf extends App {
+  setup()
 
-object App0 extends App {
-  val file = "file0"
+  val workers = files.map(f => worker(f._1))
+  workers.foreach(println)
 
-  newDir("bench")
-  newFile(file)
-  wrFile(file, "22")
-  val res = rdFile(file).get.toInt
-  println(res)
+  // clean()
 
-  delFile(file)
 }
