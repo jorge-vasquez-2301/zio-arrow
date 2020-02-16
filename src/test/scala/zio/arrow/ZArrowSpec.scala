@@ -28,7 +28,10 @@ object ZArrowSpec
             assertM((add1 <<< mul2).run(6), equalTo(13))
           },
           testM("`zipWith` zips the output of two effectful functions") {
-            assertM(add1.zipWith(mul2)(_ -> _).run(6), equalTo(7 -> 12))
+            assertM((add1 <*> mul2)(_ -> _).run(6), equalTo(7 -> 12))
+          },
+          testM("`***` zips the output of two effectful functions and returns a tuple of their result") {
+            assertM((add1 *** mul2).run((3, 3)), equalTo((4, 6)))
           },
           testM("`&&&` zips the output of two effectful functions and returns a tuple of their result") {
             assertM((add1 &&& mul2).run(6), equalTo(7 -> 12))
