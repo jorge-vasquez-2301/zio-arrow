@@ -163,9 +163,13 @@ sealed trait ZArrow[+E, -A, +B] extends Serializable { self =>
    * Returns a new effectful function that splits its input between `f` and `g`
    * and combines their output
    */
-  final def split[E1 >: E, A1 <: A, C, B1 >: B, D](that: ZArrow[E1, A1, D]) = self.first >>> that.second
+  final def split[E1 >: E, C, D](that: ZArrow[E1, C, D]): ZArrow[E1, (A, C), (B, D)] =
+    (ZArrow._1[E, A, C] >>> self) &&& (ZArrow._2[E, A, C] >>> that)
 
-  final def ***[E1 >: E, A1 <: A, C, B1 >: B, D](that: ZArrow[E1, A1, D]) = split(that)
+  /**
+   * Alias for `split`
+   */
+  final def ***[E1 >: E, C, D](that: ZArrow[E1, C, D]): ZArrow[E1, (A, C), (B, D)] = split(that)
 
   /**
    * Returns a new effectful function that can either compute the value of this
@@ -301,7 +305,7 @@ object ZArrow extends Serializable {
   /**
    * Lifts an impure function into `ZArrow`, assuming any throwables are
    * non-recoverable and do not need to be converted into errors.
-   */
+def   */
   def effectTotal[A, B](f: A => B): ZArrow[Nothing, A, B] = new Impure(f)
 
   /**
