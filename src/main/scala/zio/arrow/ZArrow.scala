@@ -120,13 +120,13 @@ sealed trait ZArrow[+E, -A, +B] extends Serializable { self =>
     that.compose(self)
 
   /**
-   * A symbolic operator for `andThen`.
+   * Alias for `andThen`
    */
   final def >>>[E1 >: E, C](that: ZArrow[E1, B, C]): ZArrow[E1, A, C] =
     self.andThen(that)
 
   /**
-   * A symbolic operator for `compose`.
+   * Alias for `compose`
    */
   final def <<<[E1 >: E, C](that: ZArrow[E1, C, A]): ZArrow[E1, C, B] =
     self.compose(that)
@@ -137,6 +137,11 @@ sealed trait ZArrow[+E, -A, +B] extends Serializable { self =>
    */
   final def zipWith[E1 >: E, A1 <: A, C, D](that: ZArrow[E1, A1, C])(f: (B, C) => D): ZArrow[E1, A1, D] =
     ZArrow.zipWith(self, that)(f)
+
+  /**
+   * Alias for `zipWith`
+   */
+  final def <*>[E1 >: E, A1 <: A, C, D](that: ZArrow[E1, A1, C])(f: (B, C) => D): ZArrow[E1, A1, D] = zipWith(that)(f)
 
   /**
    * Returns a new effectful function that computes the value of this function,
@@ -153,6 +158,18 @@ sealed trait ZArrow[+E, -A, +B] extends Serializable { self =>
    */
   final def second[A1 <: A, B1 >: B]: ZArrow[E, A1, (A1, B1)] =
     ZArrow.identity[A1] &&& self
+
+  /**
+   * Returns a new effectful function that splits its input between `f` and `g`
+   * and combines their output
+   */
+  final def split[E1 >: E, C, D](that: ZArrow[E1, C, D]): ZArrow[E1, (A, C), (B, D)] =
+    (ZArrow._1[E, A, C] >>> self) &&& (ZArrow._2[E, A, C] >>> that)
+
+  /**
+   * Alias for `split`
+   */
+  final def ***[E1 >: E, C, D](that: ZArrow[E1, C, D]): ZArrow[E1, (A, C), (B, D)] = split(that)
 
   /**
    * Returns a new effectful function that can either compute the value of this
@@ -174,16 +191,26 @@ sealed trait ZArrow[+E, -A, +B] extends Serializable { self =>
    * Returns a new effectful function that zips together the output of two
    * effectful functions that share the same input.
    */
-  final def &&&[E1 >: E, A1 <: A, C](that: ZArrow[E1, A1, C]): ZArrow[E1, A1, (B, C)] =
+  final def merge[E1 >: E, A1 <: A, C](that: ZArrow[E1, A1, C]): ZArrow[E1, A1, (B, C)] =
     ZArrow.zipWith(self, that)((a, b) => (a, b))
+
+  /**
+   * Alias for `merge`
+   */
+  final def &&&[E1 >: E, A1 <: A, C](that: ZArrow[E1, A1, C]): ZArrow[E1, A1, (B, C)] = merge(that)
 
   /**
    * Returns a new effectful function that will either compute the value of this
    * effectful function (if passed `Left(a)`), or will compute the value of the
    * specified effectful function (if passed `Right(c)`).
    */
-  final def |||[E1 >: E, B1 >: B, C](that: ZArrow[E1, C, B1]): ZArrow[E1, Either[A, C], B1] =
+  final def choice[E1 >: E, B1 >: B, C](that: ZArrow[E1, C, B1]): ZArrow[E1, Either[A, C], B1] =
     ZArrow.join(self, that)
+
+  /**
+   * Alias for `choice`
+   */
+  final def |||[E1 >: E, B1 >: B, C](that: ZArrow[E1, C, B1]): ZArrow[E1, Either[A, C], B1] = choice(that)
 
   /**
    * Maps the output of this effectful function to the specified constant.
@@ -278,7 +305,7 @@ object ZArrow extends Serializable {
   /**
    * Lifts an impure function into `ZArrow`, assuming any throwables are
    * non-recoverable and do not need to be converted into errors.
-   */
+def   */
   def effectTotal[A, B](f: A => B): ZArrow[Nothing, A, B] = new Impure(f)
 
   /**
