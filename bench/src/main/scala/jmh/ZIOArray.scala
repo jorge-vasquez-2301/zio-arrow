@@ -5,7 +5,7 @@ import scala.{ Array, Boolean, Int, Unit }
 import zio.UIO
 import zio.arrow._
 
-object ZArrowIOArray {
+object ZIOArray {
 
   def bubbleSort[A](lessThanEqual0: (A, A) => Boolean)(array: Array[A]): UIO[Unit] = {
 

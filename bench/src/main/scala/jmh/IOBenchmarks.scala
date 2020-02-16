@@ -1,14 +1,14 @@
 package bench
 import zio.{ DefaultRuntime, IO, ZIO }
-import zio.internal._
+// import zio.internal._
 
 object IOBenchmarks extends DefaultRuntime {
 
-  override val platform: Platform = Platform.benchmark
+  // override val platform: Platform = Platform.benchmark
 
-  val TracedRuntime = new DefaultRuntime {
-    override val platform = Platform.benchmark.withTracing(Tracing.enabled)
-  }
+  // val TracedRuntime = new DefaultRuntime {
+  //   override val platform = Platform.benchmark.withTracing(Tracing.enabled)
+  // }
 
   def repeat[R, E, A](n: Int)(zio: ZIO[R, E, A]): ZIO[R, E, A] =
     if (n <= 1) zio

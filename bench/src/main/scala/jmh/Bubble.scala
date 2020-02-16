@@ -1,4 +1,4 @@
-package zio
+package bench
 
 import java.util.concurrent.TimeUnit
 
@@ -6,6 +6,8 @@ import scala.collection.immutable.Range
 
 import IOBenchmarks.unsafeRun
 import org.openjdk.jmh.annotations._
+
+import zio.IO
 
 @State(Scope.Thread)
 @BenchmarkMode(Array(Mode.Throughput))
