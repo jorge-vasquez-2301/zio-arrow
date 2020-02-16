@@ -2,7 +2,6 @@ import sbt._
 import Keys._
 
 import BuildHelper._
-enablePlugins(JmhPlugin)
 
 inThisBuild(
   List(
@@ -45,6 +44,7 @@ lazy val root = (project in file("."))
 lazy val bench = (project in file("bench"))
   .settings(stdSettings("bench"))
   .settings(scalacOptions --= Seq("-Ywarn-value-discard"))
+  .enablePlugins(JmhPlugin)
   .dependsOn(root)
 
 lazy val graphDeps = libraryDependencies ++= Seq(
