@@ -47,7 +47,10 @@ object BenchUtils {
    * This performs IO to read the file, gets a value and calculates a `factorial` for that value
    */
   def worker(file: String): Int = {
+    // this reads a value from file
     val seed = rdFile(file).fold(0)(data => data.toInt)
+
+    // computes a factorial on the value read
     factorial(seed)
   }
 
@@ -66,6 +69,8 @@ object BenchUtils {
   /**
    * Composed Arrow Workers, which comprise a `worker` output for every file from the input list
    */
-  val arrWorkers = files.foldLeft(ZArrow.identity[Int]) { case (x, y) => x >>> ZArrow.lift(_ => worker(y._1)) }
+  val arrWorkers = files.foldLeft(ZArrow.identity[Int]) {
+    case (acc, item) => acc >>> ZArrow.lift(_ => worker(item._1))
+  }
 
 }
