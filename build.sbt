@@ -41,8 +41,12 @@ lazy val root = (project in file("."))
   .settings(buildInfoSettings("zio-arrow"))
 // .enablePlugins(BuildInfoPlugin)
 
+lazy val bench = (project in file("bench"))
+  .settings(stdSettings("bench"))
+  .dependsOn(root)
+
 lazy val graphDeps = libraryDependencies ++= Seq(
-  "org.scala-graph" %% "graph-core" % "1.13.2"
+  "org.scala-graph" %% "graph-core" % "1.13.1"
 )
 
 lazy val examples = (project in file("examples"))
