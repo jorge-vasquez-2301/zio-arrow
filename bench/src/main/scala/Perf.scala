@@ -1,6 +1,6 @@
 package bench
 
-import zio.{ ZIO }
+import zio.{ ZIO, IO }
 import zio.arrow._
 import zio.console.putStrLn
 

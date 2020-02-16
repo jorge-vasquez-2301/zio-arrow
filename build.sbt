@@ -2,6 +2,7 @@ import sbt._
 import Keys._
 
 import BuildHelper._
+enablePlugins(JmhPlugin)
 
 inThisBuild(
   List(
