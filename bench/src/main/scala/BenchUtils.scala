@@ -12,7 +12,7 @@ object BenchUtils {
   /**
    * Bench setup
    */
-  val totalWorkers = 5
+  val totalWorkers = 50
 
   // Random seed range for factorial
   val minRange = 8
@@ -64,13 +64,6 @@ object BenchUtils {
     factorial(seed)
   }
 
-  val workers = files.map(f => worker(f._1))
-
-  /**
-   * Calculates the total value from all workers
-   */
-  def sum(list: List[Int]): Int = list.foldLeft(0) { case (acc, item) => acc + item }
-
   /**
    * ZIO Arrow worker
    */
@@ -98,7 +91,7 @@ object BenchUtils {
 
   def showTime(runtime: Long): Unit = {
     val runtimeUs = TimeUnit.MICROSECONDS.convert(runtime, TimeUnit.NANOSECONDS)
-    println("Total Runstime: " + runtimeUs + "us")
+    println("Total Runtime: " + runtimeUs + "us")
     println()
   }
 

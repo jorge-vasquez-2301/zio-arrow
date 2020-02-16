@@ -26,7 +26,7 @@ object Perf extends zio.App {
     val t0 = System.nanoTime
 
     val workers  = files.map(f => worker(f._1))
-    val sumPlain = sum(workers)
+    val sumPlain = workers.sum
 
     val t1 = System.nanoTime
     showTime(t1 - t0)
@@ -41,7 +41,7 @@ object Perf extends zio.App {
       list <- ZIO.traverse(files) { item =>
                ZIO.effect(worker(item._1))
              }
-      out = sum(list)
+      out = list.sum
     } yield out
 
     val t3 = System.nanoTime
