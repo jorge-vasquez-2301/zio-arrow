@@ -78,5 +78,6 @@ lazy val docs = project
 
 addCommandAlias("com", "compile")
 addCommandAlias("rel", "reload")
+addCommandAlias("bench", "bench/jmh:run -i 1 -wi 1 -f1 -t1 ;.*BubbleSortBenchmark;.*ArrayFillBenchmark")
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")

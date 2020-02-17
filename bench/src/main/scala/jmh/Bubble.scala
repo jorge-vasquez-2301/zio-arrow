@@ -12,7 +12,7 @@ import zio.IO
 @State(Scope.Thread)
 @BenchmarkMode(Array(Mode.Throughput))
 @OutputTimeUnit(TimeUnit.SECONDS)
-class BubbleSortBenchmarks {
+class BubbleSortBenchmark {
   @Param(Array("1000"))
   var size: Int = _
 
