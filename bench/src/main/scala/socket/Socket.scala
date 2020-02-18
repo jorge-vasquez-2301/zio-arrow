@@ -36,3 +36,11 @@ object Prepare extends App {
   setup()
   // clean()
 }
+
+object Validate extends App {
+  val test = new SocketBenchmark()
+
+  println(s"Plain compute result:${test.plainBench}")
+  println(s"Monad compute result:${test.zioBench}")
+  println(s"Arrow compute result:${test.arrowBench}")
+}
