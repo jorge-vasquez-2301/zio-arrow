@@ -2,6 +2,7 @@ package bench
 
 import java.util.concurrent.TimeUnit
 
+import zio.{ ZIO }
 import zio.arrow._
 import FileUtils._
 
@@ -64,16 +65,15 @@ object BenchUtils {
     factorial(seed)
   }
 
-  /**
-   * ZIO Arrow worker
-   */
-  val arrWorker = ZArrow.lift(worker)
+  val monWorkers = ZIO.traverse(files) { item =>
+    ZIO.effect(worker(item._1))
+  }
 
   /**
    * Composed Arrow Workers, which comprise a `worker` output for every file from the input list
    */
   val arrWorkers = files.foldLeft(ZArrow.identity[Long]) {
-    case (acc, item) => acc >>> ZArrow.lift(_ => worker(item._1))
+    case (acc, item) => acc >>> ZArrow((_ => worker(item._1)))
   }
 
   def time[R](block: => R): R = {
