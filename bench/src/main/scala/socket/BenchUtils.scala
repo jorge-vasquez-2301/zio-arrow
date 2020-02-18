@@ -15,18 +15,18 @@ object BenchUtils {
   val totalWorkers = 50
 
   // Random seed range for factorial
-  val minRange = 8
-  val maxRange = 12
+  val minRange = 8L
+  val maxRange = 12L
 
   /**
    * Generates a random Int from a specific range
    */
-  def fromRange(start: Int, end: Int) = start + rand.nextInt((end - start) + 1)
+  def fromRange(start: Long, end: Long) = start + rand.nextLong((end - start) + 1)
 
   /**
    * Simple non-stack safe factorial function
    */
-  def factorial(n: Int): Int =
+  def factorial(n: Long): Long =
     if (n == 0) return 1
     else return n * factorial(n - 1)
 
@@ -55,10 +55,10 @@ object BenchUtils {
    * Impure unsafe worker process
    * This performs IO to read the file, gets a value and calculates a `factorial` for that value
    */
-  def worker(file: String): Int = {
+  def worker(file: String): Long = {
     // println("Inside a worker")
     // this reads a value from file
-    val seed = rdFile(file).fold(0)(data => data.toInt)
+    val seed = rdFile(file).fold(0L)(data => data.toLong)
 
     // computes a factorial on the value read
     factorial(seed)
@@ -72,7 +72,7 @@ object BenchUtils {
   /**
    * Composed Arrow Workers, which comprise a `worker` output for every file from the input list
    */
-  val arrWorkers = files.foldLeft(ZArrow.identity[Int]) {
+  val arrWorkers = files.foldLeft(ZArrow.identity[Long]) {
     case (acc, item) => acc >>> ZArrow.lift(_ => worker(item._1))
   }
 

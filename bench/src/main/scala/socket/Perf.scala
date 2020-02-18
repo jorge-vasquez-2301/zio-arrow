@@ -1,6 +1,6 @@
 package bench
 
-import zio.{ ZIO, IO }
+import zio.{ IO, ZIO }
 import zio.arrow._
 import zio.console.putStrLn
 
@@ -25,8 +25,8 @@ object Perf extends zio.App {
 
     val t0 = System.nanoTime
 
-    val workers: List[Int] = files.map(f => worker(f._1))
-    val sumPlain: Int      = workers.sum
+    val workers: List[Long] = files.map(f => worker(f._1))
+    val sumPlain: Long      = workers.sum
 
     val t1 = System.nanoTime
     showTime(t1 - t0)
@@ -37,7 +37,7 @@ object Perf extends zio.App {
 
     val t2 = System.nanoTime
 
-    val sumMon: ZIO[Any, Throwable, Int] = for {
+    val sumMon: ZIO[Any, Throwable, Long] = for {
       list <- ZIO.traverse(files) { item =>
                ZIO.effect(worker(item._1))
              }
@@ -55,10 +55,10 @@ object Perf extends zio.App {
 
     val t4 = System.nanoTime
 
-    val arrWorkers: ZArrow[Nothing, Int, Int] = files.foldLeft(ZArrow.identity[Int]) {
+    val arrWorkers: ZArrow[Nothing, Long, Long] = files.foldLeft(ZArrow.identity[Long]) {
       case (acc, item) => acc >>> ZArrow.lift(_ => worker(item._1))
     }
-    val sumArr: IO[Nothing, Int] = arrWorkers.run(0)
+    val sumArr: IO[Nothing, Long] = arrWorkers.run(0)
 
     val t5 = System.nanoTime
     showTime(t5 - t4)
