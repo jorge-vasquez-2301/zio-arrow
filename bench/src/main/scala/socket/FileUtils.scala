@@ -13,7 +13,7 @@ object FileUtils {
     if (!Files.exists(path))
       Files.createDirectory(path)
 
-    println("Created dir: " + dest)
+    // println("Created dir: " + dest)
   }
 
   def newFile(file: String): Unit = {

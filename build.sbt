@@ -36,13 +36,17 @@ libraryDependencies ++= Seq(
 
 testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
 
+lazy val fmtSettings = Seq(
+  scalafmtOnCompile := true
+)
+
 lazy val root = (project in file("."))
-  .settings(stdSettings("zio-arrow"))
+  .settings(stdSettings("zio-arrow"), fmtSettings)
   .settings(buildInfoSettings("zio-arrow"))
 // .enablePlugins(BuildInfoPlugin)
 
 lazy val bench = (project in file("bench"))
-  .settings(stdSettings("bench"))
+  .settings(stdSettings("bench"), fmtSettings)
   .settings(scalacOptions --= Seq("-Ywarn-value-discard"))
   .enablePlugins(JmhPlugin)
   .dependsOn(root)
@@ -52,7 +56,7 @@ lazy val graphDeps = libraryDependencies ++= Seq(
 )
 
 lazy val examples = (project in file("examples"))
-  .settings(stdSettings("examples"))
+  .settings(stdSettings("examples"), fmtSettings)
   .settings(buildInfoSettings("examples"))
   .settings(graphDeps)
   .dependsOn(root)

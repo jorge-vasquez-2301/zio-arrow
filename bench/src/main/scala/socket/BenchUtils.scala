@@ -12,8 +12,9 @@ object BenchUtils {
 
   /**
    * Bench setup
+   * This mimics the number of simultaneous open connections to the  server
    */
-  val totalWorkers = 50
+  val totalWorkers = 10
 
   // Random seed range for factorial
   val minRange = 8L
@@ -57,9 +58,10 @@ object BenchUtils {
    * This performs IO to read the file, gets a value and calculates a `factorial` for that value
    */
   def worker(file: String): Long = {
-    // println("Inside a worker")
     // this reads a value from file
     val seed = rdFile(file).fold(0L)(data => data.toLong)
+
+    // println(s"Worker seed : ${seed}")
 
     // computes a factorial on the value read
     factorial(seed)
@@ -76,7 +78,7 @@ object BenchUtils {
    * Composed Arrow Workers, which comprise a `worker` output for every file from the input list
    */
   val arrWorkers = files.foldLeft(ZArrow.identity[Long]) {
-    case (acc, item) => acc >>> ZArrow((_ => worker(item._1)))
+    case (arr, item) => arr >>> ZArrow((acc: Long) => acc + worker(item._1))
   }
 
   def time[R](block: => R): R = {

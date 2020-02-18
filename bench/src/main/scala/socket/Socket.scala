@@ -5,12 +5,6 @@ import java.util.concurrent.TimeUnit
 import org.openjdk.jmh.annotations._
 
 import BenchUtils._
-
-object randTest extends App {
-  val g1 = fromRange(minRange, maxRange)
-  println(g1)
-}
-
 @State(Scope.Thread)
 @BenchmarkMode(Array(Mode.Throughput))
 @OutputTimeUnit(TimeUnit.SECONDS)
@@ -32,15 +26,48 @@ class SocketBenchmark {
   def arrowBench(): Long = rt.unsafeRun(arrWorkers.run(0L))
 }
 
-object Prepare extends App {
-  setup()
-  // clean()
+/**
+ * Randomizer test App
+ */
+object randTest extends App {
+  val g1 = fromRange(minRange, maxRange)
+  println(g1)
 }
 
+/**
+ * Benchmarks preparation App
+ */
+object Prepare extends App {
+  setup()
+}
+
+/**
+ * Cleanup App
+ */
+object Clean extends App {
+  clean()
+}
+
+/**
+ * Result Validation app
+ * This validates that all results are consistent
+ */
 object Validate extends App {
   val test = new SocketBenchmark()
 
-  println(s"Plain compute result:${test.plainBench}")
-  println(s"Monad compute result:${test.zioBench}")
-  println(s"Arrow compute result:${test.arrowBench}")
+  setup()
+
+  val plainRes = test.plainBench
+  val zioRes   = test.zioBench
+  val arrRes   = test.arrowBench
+
+  assert(plainRes == zioRes)
+  assert(zioRes == arrRes)
+
+  println(s"Plain  compute result \t: ${plainRes}")
+  println(s"ZIO    compute result \t: ${zioRes}")
+  println(s"ZArrow compute result \t: ${arrRes}")
+
+  // clean()
+
 }
