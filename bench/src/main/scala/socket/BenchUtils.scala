@@ -65,9 +65,12 @@ object BenchUtils {
     factorial(seed)
   }
 
-  val monWorkers = ZIO.traverse(files) { item =>
-    ZIO.effect(worker(item._1))
-  }
+  val monWorkers = for {
+    list <- ZIO.traverse(files) { item =>
+             ZIO.effect(worker(item._1))
+           }
+    out = list.sum
+  } yield out
 
   /**
    * Composed Arrow Workers, which comprise a `worker` output for every file from the input list

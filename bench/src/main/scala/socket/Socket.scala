@@ -1,6 +1,6 @@
 package bench
 
-import zio.{ IO, ZIO }
+import zio.{ DefaultRuntime }
 import java.util.concurrent.TimeUnit
 import org.openjdk.jmh.annotations._
 
@@ -16,6 +16,8 @@ object randTest extends App {
 @OutputTimeUnit(TimeUnit.SECONDS)
 class SocketBenchmark {
 
+  val rt = new DefaultRuntime {}
+
   @Benchmark
   def plainBench(): Long = {
     val workers: List[Long] = files.map(f => worker(f._1))
@@ -24,24 +26,13 @@ class SocketBenchmark {
   }
 
   @Benchmark
-  def zioBench(): ZIO[Any, Throwable, Long] =
-    for {
-      list <- monWorkers
-      out  = list.sum
-    } yield out
+  def zioBench(): Long = rt.unsafeRun(monWorkers)
 
   @Benchmark
-  def arrowBench(): IO[Nothing, Long] = arrWorkers.run(0L)
+  def arrowBench(): Long = rt.unsafeRun(arrWorkers.run(0L))
 }
 
-object Perf extends zio.App {
-  def run(args: List[String]) =
-    // app.fold(_ => 1, _ => 0)
-    app.as(0)
-
-  val app = {
-    ZIO.succeed(setup())
-    // ZIO.effect(clean())
-  }
-
+object Prepare extends App {
+  setup()
+  // clean()
 }
