@@ -4,7 +4,7 @@
 
 ## Hardware
 
-* CPU: Intel(R) Core(TM) i7-6700HQ CPU @ 2.60GHz 
+* CPU: i7-6700HQ CPU @ 2.60GHz 
 * Memory: DDR4 64GB
 * SSD Drive 
 
@@ -16,6 +16,7 @@
 * JMH : 1.21
 
 ## API Benchmark Results ( by method, the higher the better )
+### note: CPU-Memory iteraction, memory bound
 ```bash
 [info] Benchmark               Mode  Cnt          Score   Error  Units
 [info] asEffect  thrpt        39291338.197          ops/s
@@ -32,4 +33,19 @@
 [info] split     thrpt        83030147.647          ops/s
 [info] test      thrpt        18945081.040          ops/s
 [info] zipWith   thrpt        83923062.648          ops/s
+```
+
+## SocketIO Benchmark Results 
+### note: CPU-Memory-Disk iteraction, IO bound, CPU bound, balanced
+
+### Test setup
+* 10 Workers 
+* Factorial seed range: 8..12
+* Balanced approach with comparable IO and Memory load
+
+```bash
+[info] Benchmark                    Mode  Cnt      Score   Error  Units
+[info] plainBench  thrpt       28813.775          ops/s
+[info] arrowBench  thrpt       28221.561          ops/s
+[info] zioBench    thrpt       27416.637          ops/s
 ```
