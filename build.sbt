@@ -36,17 +36,27 @@ libraryDependencies ++= Seq(
 
 testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
 
+lazy val fmtSettings = Seq(
+  scalafmtOnCompile := true
+)
+
 lazy val root = (project in file("."))
-  .settings(stdSettings("zio-arrow"))
+  .settings(stdSettings("zio-arrow"), fmtSettings)
   .settings(buildInfoSettings("zio-arrow"))
 // .enablePlugins(BuildInfoPlugin)
 
+lazy val bench = (project in file("bench"))
+  .settings(stdSettings("bench"), fmtSettings)
+  .settings(scalacOptions --= Seq("-Ywarn-value-discard"))
+  .enablePlugins(JmhPlugin)
+  .dependsOn(root)
+
 lazy val graphDeps = libraryDependencies ++= Seq(
-  "org.scala-graph" %% "graph-core" % "1.13.2"
+  "org.scala-graph" %% "graph-core" % "1.13.1"
 )
 
 lazy val examples = (project in file("examples"))
-  .settings(stdSettings("examples"))
+  .settings(stdSettings("examples"), fmtSettings)
   .settings(buildInfoSettings("examples"))
   .settings(graphDeps)
   .dependsOn(root)
@@ -72,5 +82,7 @@ lazy val docs = project
 
 addCommandAlias("com", "compile")
 addCommandAlias("rel", "reload")
+// addCommandAlias("bench", "bench/jmh:run -i 1 -wi 1 -f1 -t1 ;.*BubbleSortBenchmark;.*ArrayFillBenchmark")
+addCommandAlias("bench", "bench/jmh:run -i 1 -wi 1 -f1 -t1 .*SocketBenchmark")
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
