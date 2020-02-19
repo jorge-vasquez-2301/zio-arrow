@@ -61,12 +61,13 @@ object BenchUtils {
     // this reads a value from file
     val seed = rdFile(file).fold(0L)(data => data.toLong)
 
-    // println(s"Worker seed : ${seed}")
-
     // computes a factorial on the value read
     factorial(seed)
   }
 
+  /**
+   * ZIO effect for monoidal computation, which adds a `worker` output for every file the list
+   */
   val monWorkers = for {
     list <- ZIO.traverse(files) { item =>
              ZIO.effect(worker(item._1))
@@ -75,22 +76,21 @@ object BenchUtils {
   } yield out
 
   /**
-   * Composed Arrow Workers, which comprise a `worker` output for every file from the input list
+   * Composed Arrow Workers, which adds a `worker` output for every file the list
    */
   val arrWorkers = files.foldLeft(ZArrow.identity[Long]) {
     case (arr, item) => arr >>> ZArrow((acc: Long) => acc + worker(item._1))
   }
 
+  /**
+   * Extra utilities for quick latency estimation
+   */
   def time[R](block: => R): R = {
-
     val t0        = System.nanoTime()
     val result    = block // call-by-name
     val runtimeNs = System.nanoTime - t0
     val runtimeUs = TimeUnit.MICROSECONDS.convert(runtimeNs, TimeUnit.NANOSECONDS)
-    // val runtimeMs = TimeUnit.MILLISECONDS.convert(runtimeNs, TimeUnit.NANOSECONDS)
-    // println("Elapsed time: " + runtimeNs + "ns")
     println("Elapsed time: " + runtimeUs + "us")
-    // println("Elapsed time: " + runtimeMs + "ms")
     result
   }
 

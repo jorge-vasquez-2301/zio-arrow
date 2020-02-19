@@ -1,5 +1,7 @@
 package bench
+import com.github.ghik.silencer.silent
 
+@silent("discarded non-Unit value")
 object FileUtils {
   import java.nio.file.{ Files, Paths }
 
@@ -12,8 +14,6 @@ object FileUtils {
 
     if (!Files.exists(path))
       Files.createDirectory(path)
-
-    // println("Created dir: " + dest)
   }
 
   def newFile(file: String): Unit = {

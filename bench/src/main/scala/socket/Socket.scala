@@ -68,6 +68,4 @@ object Validate extends App {
   println(s"ZIO    compute result \t: ${zioRes}")
   println(s"ZArrow compute result \t: ${arrRes}")
 
-  // clean()
-
 }
