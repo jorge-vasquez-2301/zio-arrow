@@ -14,7 +14,7 @@ object BenchUtils {
    * Bench setup
    * This mimics the number of simultaneous open connections to the  server
    */
-  val totalWorkers = 10
+  val totalWorkers = 20
 
   // Random seed range for factorial
   val minRange = 8L

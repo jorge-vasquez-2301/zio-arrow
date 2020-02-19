@@ -11,16 +11,49 @@ import Helper._
 @OutputTimeUnit(TimeUnit.SECONDS)
 class ApiBenchmark {
   @Benchmark
-  def lift() = ZArrow.lift(plusOne)
+  def lift = ZArrow.lift(plusOne)
 
   @Benchmark
-  def compose() = (add1 <<< mul2).run(1)
+  def id = ZArrow.id.run(1)
 
   @Benchmark
-  def endThen() = (add1 >>> mul2).run(1)
+  def compose = (add1 <<< mul2).run(1)
+
+  @Benchmark
+  def endThen = (add1 >>> mul2).run(1)
 
   @Benchmark
   def zipWith = (add1 <*> mul2)(_ -> _).run(1)
+
+  @Benchmark
+  def first = add1.first.run(1)
+
+  @Benchmark
+  def second = add1.second.run(1)
+
+  @Benchmark
+  def merge = (add1 *** mul2).run((1, 1))
+
+  @Benchmark
+  def split = (add1 &&& mul2).run(1)
+
+  @Benchmark
+  def choice = (add1 ||| mul2).run(Left(1))
+
+  @Benchmark
+  def asEffect = add1.asEffect.run(1)
+
+  @Benchmark
+  def test = {
+    val tester = ZArrow.test(ZArrow.lift[List[Int], Boolean](_.sum > 10))
+    tester.run(List(1, 2, 3, 4))
+  }
+
+  @Benchmark
+  def left = ZArrow._1[Nothing, Int, String].run((1, "hi"))
+
+  @Benchmark
+  def right = ZArrow._2[Nothing, Int, String].run((1, "hi"))
 
 }
 

@@ -86,7 +86,7 @@ addCommandAlias("rel", "reload")
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
 
-// For benchmarks
+// Benchmarks
 addCommandAlias("benchApi", "bench/jmh:run -i 1 -wi 1 -f1 -t2 .*ApiBenchmark")
-addCommandAlias("benchArray", "bench/jmh:run -i 1 -wi 1 -f1 -t1 ;.*BubbleSortBenchmark;.*ArrayFillBenchmark")
-addCommandAlias("benchSocket", "bench/jmh:run -i 1 -wi 1 -f1 -t1 .*SocketBenchmark")
+addCommandAlias("benchArray", "bench/jmh:run -i 1 -wi 1 -f1 -t2 ;.*BubbleSortBenchmark;.*ArrayFillBenchmark")
+addCommandAlias("benchSocket", "bench/jmh:run -i 1 -wi 1 -f1 -t2 .*SocketBenchmark")
