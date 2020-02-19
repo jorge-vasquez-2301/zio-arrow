@@ -38,8 +38,8 @@ object GraphApp extends App {
   println(s"Is acyclic: ${g1.isAcyclic}")
   println(s"Is complete: ${g1.isComplete}")
 
-  val comp0 = nset.foldLeft(ZArrow.identity[Int])((x, y) => x >>> y.op)
-  val comp1 = g1.nodes.foldLeft(ZArrow.identity[Int])((x, y) => x >>> y.op)
+  val comp0 = nset.foldLeft(ZArrow.id[Int])((x, y) => x >>> y.op)
+  val comp1 = g1.nodes.foldLeft(ZArrow.id[Int])((x, y) => x >>> y.op)
 
   val prog1 = comp1.run(4)
 }

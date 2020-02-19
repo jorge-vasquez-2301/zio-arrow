@@ -9,12 +9,13 @@ object Hello extends App {
   val g = (_: Int) * 2
   val h = (_: Int) - 3
 
-  val arrF = ZArrow.lift(f)
-  val arrG = ZArrow.lift(g)
-  val arrH = ZArrow.lift(h)
+  // Lift methods to arrows
+  val arrF = ZArrow(f)
+  val arrG = ZArrow(g)
+  val arrH = ZArrow(h)
 
   val arrows   = List(arrF, arrG, arrH)
-  val composed = arrows.foldLeft(ZArrow.identity[Int])(_ >>> _)
+  val composed = arrows.foldLeft(ZArrow.id[Int])(_ >>> _)
 
   val prog0 = composed.run(10)
 

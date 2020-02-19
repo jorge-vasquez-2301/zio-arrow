@@ -78,8 +78,8 @@ object BenchUtils {
   /**
    * Composed Arrow Workers, which adds a `worker` output for every file the list
    */
-  val arrWorkers = files.foldLeft(ZArrow.identity[Long]) {
-    case (arr, item) => arr >>> ZArrow((acc: Long) => acc + worker(item._1))
+  val arrWorkers = files.foldLeft(ZArrow.id[Long]) {
+    (arr, item) => arr >>> ZArrow((acc: Long) => acc + worker(item._1))
   }
 
   /**
