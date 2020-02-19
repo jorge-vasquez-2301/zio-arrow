@@ -271,7 +271,9 @@ object ZArrow extends Serializable {
    */
   def liftM[E, A, B](f: A => IO[E, B]): ZArrow[E, A, B] = new Pure(f)
 
-  // Alias to liftM
+  /**
+   * Alias for `liftM`
+   */
   def fromFunctionM[E, A, B](f: A => IO[E, B]): ZArrow[E, A, B] = liftM(f)
 
   /**
@@ -279,7 +281,9 @@ object ZArrow extends Serializable {
    */
   def lift[A, B](f: A => B): ZArrow[Nothing, A, B] = new Impure(f)
 
-  // Alias to lift
+  /**
+   * Alias for `lift`
+   */
   def fromFunction[A, B](f: A => B): ZArrow[Nothing, A, B] = lift(f)
 
   /**
