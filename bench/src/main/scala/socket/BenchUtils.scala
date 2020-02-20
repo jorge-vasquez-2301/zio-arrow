@@ -14,7 +14,8 @@ object BenchUtils {
    * Bench setup
    * This mimics the number of simultaneous open connections to the  server
    */
-  val totalWorkers = 10
+  val numIOWorkers      = 10
+  val numComputeWorkers = 1000
 
   // Random seed range for factorial
   val minRange = 8L
@@ -35,7 +36,9 @@ object BenchUtils {
   /**
    * Prepare test file data
    */
-  lazy val files = List.tabulate(totalWorkers)(num => ("file" + num.toString, fromRange(minRange, maxRange).toString))
+  val files = List.tabulate(numIOWorkers)(num => ("file" + num.toString, fromRange(minRange, maxRange).toString))
+
+  val seeds: List[Long] = List.fill(numComputeWorkers)(fromRange(minRange, maxRange))
 
   /**
    * Create test files
@@ -54,10 +57,10 @@ object BenchUtils {
   def clean() = files.foreach(f => delFile(f._1))
 
   /**
-   * Impure unsafe worker process
+   * Impure unsafe workerIO process
    * This performs IO to read the file, gets a value and calculates a `factorial` for that value
    */
-  def worker(file: String): Long = {
+  def workerIO(file: String): Long = {
     // this reads a value from file
     val seed = rdFile(file).fold(0L)(data => data.toLong)
 
@@ -66,20 +69,31 @@ object BenchUtils {
   }
 
   /**
-   * ZIO effect for monoidal computation, which adds a `worker` output for every file the list
+   * ZIO effect for monoidal computation, which adds a `workerIO` output for every file the list
    */
-  val monWorkers = for {
+  val monWorkersIO = for {
     list <- ZIO.traverse(files) { item =>
-             ZIO.effect(worker(item._1))
+             ZIO.effect(workerIO(item._1))
+           }
+    out = list.sum
+  } yield out
+
+  val monWorkersCompute = for {
+    list <- ZIO.traverse(seeds) { seed =>
+             ZIO.effectTotal(factorial(seed))
            }
     out = list.sum
   } yield out
 
   /**
-   * Composed Arrow Workers, which adds a `worker` output for every file the list
+   * Composed Arrow Workers, which adds a `workerIO` output for every file the list
    */
-  val arrWorkers = files.foldLeft(ZArrow.identity[Long]) { (arr, item) =>
-    arr >>> ZArrow((acc: Long) => acc + worker(item._1))
+  val arrWorkersIO = files.foldLeft(ZArrow.identity[Long]) { (arr, item) =>
+    arr >>> ZArrow((acc: Long) => acc + workerIO(item._1))
+  }
+
+  val arrWorkersCompute = seeds.foldLeft(ZArrow.identity[Long]) { (arr, seed) =>
+    arr >>> ZArrow((acc: Long) => acc + factorial(seed))
   }
 
   /**

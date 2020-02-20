@@ -18,7 +18,7 @@
 ## API Benchmark Results ( by method, the higher the better )
 ### note: CPU-Memory iteraction, memory bound
 ```bash
-[info] Benchmark       Mode            Score (ops/s)
+[info] Benchmark       Mode         Score (ops/s)
 [info] asEffect        thrpt        39291338.197    
 [info] choice          thrpt        82481642.103    
 [info] compose         thrpt        76284520.477    
