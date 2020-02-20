@@ -35,16 +35,53 @@
 [info] zipWith         thrpt        83923062.648    
 ```
 
-## SocketIO Benchmark Results 
+## SocketIO Benchmark Results (the higher the better)
 ### note: CPU-Memory-Disk iteraction, IO bound, CPU bound, balanced
+
+### Test Description
+A script creates a number of files, each holding a single random `Long` value from the specified range.<br>
+Each worker gets a file name on input, reads a seed from there and computes a `factorial` for that seed<br>
+The final result is the `sum` of all list values
+
+This test emphasizes on real-world datacenter scenario, which is when an application is all memory, CPU and IO bound
 
 ### Test setup
 * 10 Workers 
 * Factorial seed range: 8..12
 * Balanced approach with comparable IO and Memory load
+* 2 CPU threads
 
 ```bash
 [info] Benchmark       Mode        Score (ops/s)
 [info] plainBench      thrpt       28813.775
 [info] arrowBench      thrpt       28221.561
 [info] zioBench        thrpt       27416.637
+```
+
+## Compute Benchmark Results (the higher the better)
+### note: CPU-Memory iteraction, CPU/Memory bound
+
+### Test Description
+A list of random `Long` numbers from a specific range is generated. For each value a `factorial` is computed.<br>
+We build a sequential computation, which creates a separate worker for each value, evaluates a result and stores its output in a list.<br>
+The final result is the `sum` of all list values
+
+This test emphasizes on long sequential computation chains, which may be a use case for a deep datacenter application pipeline.
+
+
+### Test setup
+* 500 Workers 
+* Factorial seed range: 8..12
+* Sequential computation: Each worker linearly gets a `Long` seed from a list, computes
+* 2 CPU threads
+
+```bash
+[info] Benchmark       Mode        Score (ops/s)  
+[info] plainBench      thrpt       60215.599
+[info] zioBench        thrpt        9348.713
+[info] arrowBench      thrpt       82254.532
+```
+
+We recognize a **9x improvement** for `ZIO Arrow` over `ZIO Monad` in this test. This can be explained in a drastical reduce of memory allocations and polymorphic dispatch events on `JVM`.
+
+This emphasizes a poor performance of `Monad` computation due to excessive allocations and highlights an `Arrow` compositional semantics for the purpose of performance for the `JVM` ecosystem
