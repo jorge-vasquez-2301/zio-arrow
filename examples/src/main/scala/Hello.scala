@@ -15,7 +15,7 @@ object Hello extends App {
   val arrH = ZArrow(h)
 
   val arrows   = List(arrF, arrG, arrH)
-  val composed = arrows.foldLeft(ZArrow.id[Int])(_ >>> _)
+  val composed = arrows.foldLeft(ZArrow.identity[Int])(_ >>> _)
 
   val prog0 = composed.run(10)
 

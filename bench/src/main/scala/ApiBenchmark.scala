@@ -14,7 +14,7 @@ class ApiBenchmark {
   def lift = ZArrow.lift(plusOne)
 
   @Benchmark
-  def id = ZArrow.id.run(1)
+  def id = ZArrow.identity.run(1)
 
   @Benchmark
   def compose = (add1 <<< mul2).run(1)

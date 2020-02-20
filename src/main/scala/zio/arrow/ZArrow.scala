@@ -149,7 +149,7 @@ sealed trait ZArrow[+E, -A, +B] extends Serializable { self =>
    * the second element of a tuple.
    */
   final def first[A1 <: A, B1 >: B]: ZArrow[E, A1, (B1, A1)] =
-    self &&& ZArrow.id[A1]
+    self &&& ZArrow.identity[A1]
 
   /**
    * Returns a new effectful function that computes the value of this function,
@@ -157,7 +157,7 @@ sealed trait ZArrow[+E, -A, +B] extends Serializable { self =>
    * the first element of a tuple.
    */
   final def second[A1 <: A, B1 >: B]: ZArrow[E, A1, (A1, B1)] =
-    ZArrow.id[A1] &&& self
+    ZArrow.identity[A1] &&& self
 
   /**
    * Returns a new effectful function that splits its input between `f` and `g`
@@ -264,7 +264,7 @@ object ZArrow extends Serializable {
    * Returns the id effectful function, which performs no effects and
    * merely returns its input unmodified.
    */
-  def id[A]: ZArrow[Nothing, A, A] = lift(a => a)
+  def identity[A]: ZArrow[Nothing, A, A] = lift(a => a)
 
   /**
    * Lifts a pure `A => IO[E, B]` into `ZArrow`.
@@ -318,7 +318,7 @@ def   */
    * returns false, returns `Right(a)`.
    */
   def test[E, A](k: ZArrow[E, A, Boolean]): ZArrow[E, A, Either[A, A]] =
-    (k &&& ZArrow.id[A]) >>> ZArrow((t: (Boolean, A)) => if (t._1) Left(t._2) else Right(t._2))
+    (k &&& ZArrow.identity[A]) >>> ZArrow((t: (Boolean, A)) => if (t._1) Left(t._2) else Right(t._2))
 
   /**
    * Returns a new effectful function that passes an `A` to the condition, and
@@ -343,7 +343,7 @@ def   */
     (cond, then0) match {
       case (cond: Impure[_, _, _], then0: Impure[_, _, _]) =>
         new Impure[E, A, A](a => if (cond.apply0(a)) then0.apply0(a) else a)
-      case _ => ifThenElse(cond)(then0)(ZArrow.id[A])
+      case _ => ifThenElse(cond)(then0)(ZArrow.identity[A])
     }
 
   /**
@@ -355,7 +355,7 @@ def   */
     (cond, then0) match {
       case (cond: Impure[_, _, _], then0: Impure[_, _, _]) =>
         new Impure[E, A, A](a => if (cond.apply0(a)) a else then0.apply0(a))
-      case _ => ifThenElse(cond)(ZArrow.id[A])(then0)
+      case _ => ifThenElse(cond)(ZArrow.identity[A])(then0)
     }
 
   /**

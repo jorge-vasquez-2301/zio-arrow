@@ -18,8 +18,8 @@ object ZArrowSpec
           testM("`lift` lifts from A => B into effectful function") {
             assertM(add1.run(4), equalTo(5))
           },
-          testM("`id` returns the id of the input without modification") {
-            assertM(id[Int].run(1), equalTo(1))
+          testM("`identity` returns the id of the input without modification") {
+            assertM(identity[Int].run(1), equalTo(1))
           },
           testM("`>>>` is a symbolic operator of `andThen`which does a Backwards composition of effectful functions") {
             assertM((add1 >>> mul2).run(6), equalTo(14))
