@@ -18,7 +18,7 @@ object ZArrowSpec
           testM("`lift` lifts from A => B into effectful function") {
             assertM(add1.run(4), equalTo(5))
           },
-          testM("`identity` returns the identity of the input without modification") {
+          testM("`identity` returns the id of the input without modification") {
             assertM(identity[Int].run(1), equalTo(1))
           },
           testM("`>>>` is a symbolic operator of `andThen`which does a Backwards composition of effectful functions") {
@@ -30,7 +30,7 @@ object ZArrowSpec
           testM("`zipWith` zips the output of two effectful functions") {
             assertM((add1 <*> mul2)(_ -> _).run(6), equalTo(7 -> 12))
           },
-          testM("`***` zips the output of two effectful functions and returns a tuple of their result") {
+          testM("`***` feeds a tuple to the two effectful functions and returns a tuple of their results") {
             assertM((add1 *** mul2).run((3, 3)), equalTo((4, 6)))
           },
           testM("`&&&` zips the output of two effectful functions and returns a tuple of their result") {
@@ -69,8 +69,7 @@ object ZArrowSpec
             assertM(mul2.asEffect.run(56), equalTo(56))
           ),
           testM("`test` check a condition and returns an Either output: Left if the condition is true otherwise false") {
-            val tester =
-              ZArrow.test(lift[List[Int], Boolean](_.sum > 10))
+            val tester = ZArrow.test(lift[List[Int], Boolean](_.sum > 10))
 
             for {
               v1 <- tester.run(List(1, 2, 5))
@@ -137,11 +136,11 @@ object ZArrowSpecUtil {
   val plusOne = (_: Int) + 1
   val mulTwo  = (_: Int) * 2
 
-  val add1: ZArrow[Nothing, Int, Int] = ZArrow.lift(plusOne)
-  val mul2: ZArrow[Nothing, Int, Int] = ZArrow.lift(mulTwo)
+  val add1: ZArrow[Nothing, Int, Int] = ZArrow(plusOne)
+  val mul2: ZArrow[Nothing, Int, Int] = ZArrow(mulTwo)
 
-  val greaterThan0 = lift[Int, Boolean](_ > 0)
-  val lessThan10   = lift[Int, Boolean](_ < 10)
+  val greaterThan0 = ZArrow((_: Int) > 0)
+  val lessThan10   = ZArrow((_: Int) < 10)
 
   val thrower = effect[String, Int, Int] { case _: Throwable => "error" }(_ => throw new Exception)
 }

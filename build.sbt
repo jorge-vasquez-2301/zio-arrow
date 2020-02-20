@@ -80,9 +80,14 @@ lazy val docs = project
   .dependsOn(root)
   .enablePlugins(MdocPlugin, DocusaurusPlugin, ScalaUnidocPlugin)
 
+// Common
 addCommandAlias("com", "compile")
 addCommandAlias("rel", "reload")
-// addCommandAlias("bench", "bench/jmh:run -i 1 -wi 1 -f1 -t1 ;.*BubbleSortBenchmark;.*ArrayFillBenchmark")
-addCommandAlias("bench", "bench/jmh:run -i 1 -wi 1 -f1 -t1 .*SocketBenchmark")
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias("check", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
+
+// Benchmarks
+addCommandAlias("benchApi", "bench/jmh:run -i 1 -wi 1 -f1 -t2 .*ApiBenchmark")
+addCommandAlias("benchArray", "bench/jmh:run -i 1 -wi 1 -f1 -t2 ;.*BubbleSortBenchmark;.*ArrayFillBenchmark")
+addCommandAlias("benchSocket", "bench/jmh:run -i 1 -wi 1 -f1 -t2 .*SocketBenchmark")
+addCommandAlias("benchCompute", "bench/jmh:run -i 1 -wi 1 -f1 -t2 .*ComputeBenchmark")

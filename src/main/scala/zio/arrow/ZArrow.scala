@@ -261,7 +261,7 @@ object ZArrow extends Serializable {
     new Impure(_ => throw new ZArrowError[E](e))
 
   /**
-   * Returns the identity effectful function, which performs no effects and
+   * Returns the id effectful function, which performs no effects and
    * merely returns its input unmodified.
    */
   def identity[A]: ZArrow[Nothing, A, A] = lift(a => a)
@@ -271,7 +271,9 @@ object ZArrow extends Serializable {
    */
   def liftM[E, A, B](f: A => IO[E, B]): ZArrow[E, A, B] = new Pure(f)
 
-  // Alias to liftM
+  /**
+   * Alias for `liftM`
+   */
   def fromFunctionM[E, A, B](f: A => IO[E, B]): ZArrow[E, A, B] = liftM(f)
 
   /**
@@ -279,7 +281,9 @@ object ZArrow extends Serializable {
    */
   def lift[A, B](f: A => B): ZArrow[Nothing, A, B] = new Impure(f)
 
-  // Alias to lift
+  /**
+   * Alias for `lift`
+   */
   def fromFunction[A, B](f: A => B): ZArrow[Nothing, A, B] = lift(f)
 
   /**
@@ -314,8 +318,7 @@ def   */
    * returns false, returns `Right(a)`.
    */
   def test[E, A](k: ZArrow[E, A, Boolean]): ZArrow[E, A, Either[A, A]] =
-    (k &&& ZArrow.identity[A]) >>>
-      ZArrow.lift((t: (Boolean, A)) => if (t._1) Left(t._2) else Right(t._2))
+    (k &&& ZArrow.identity[A]) >>> ZArrow((t: (Boolean, A)) => if (t._1) Left(t._2) else Right(t._2))
 
   /**
    * Returns a new effectful function that passes an `A` to the condition, and

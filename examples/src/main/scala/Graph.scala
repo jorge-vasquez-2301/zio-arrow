@@ -22,9 +22,9 @@ object GraphApp extends App {
   val g = (_: Int) * 2
   val h = (_: Int) - 3
 
-  val arrF = ZArrow.lift(f)
-  val arrG = ZArrow.lift(g)
-  val arrH = ZArrow.lift(h)
+  val arrF = ZArrow(f)
+  val arrG = ZArrow(g)
+  val arrH = ZArrow(h)
 
   val n1 = MyNode(1, arrF)
   val n2 = MyNode(2, arrG)
