@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit
 import zio.{ ZIO }
 import zio.arrow._
 import FileUtils._
+import scala.annotation.tailrec
 
 object BenchUtils {
 
@@ -29,9 +30,13 @@ object BenchUtils {
   /**
    * Simple non-stack safe factorial function
    */
-  def factorial(n: Long): Long =
-    if (n == 0) return 1
-    else return n * factorial(n - 1)
+  def factorial(n: Long): Long = {
+    @tailrec
+    def factorialAccumulator(acc: Long, n: Long): Long =
+      if (n == 0) acc
+      else factorialAccumulator(n * acc, n - 1)
+    factorialAccumulator(1, n)
+  }
 
   /**
    * Prepare test file data

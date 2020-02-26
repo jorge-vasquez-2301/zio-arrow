@@ -77,11 +77,11 @@ This test emphasizes on long sequential computation chains, which may be a use c
 
 ```bash
 [info] Benchmark       Mode        Score (ops/s)  
-[info] plainBench      thrpt       60215.599
-[info] zioBench        thrpt        9348.713
-[info] arrowBench      thrpt       82254.532
+[info] plainBench      thrpt       61867.754
+[info] zioBench        thrpt       9177.142
+[info] arrowBench      thrpt       96310.372
 ```
 
-We recognize a **9x improvement** for `ZIO Arrow` over `ZIO Monad` in this test. This can be explained in a drastical reduce of memory allocations and polymorphic dispatch events on `JVM`.
+We recognize a **10x+ improvement** for `ZIO Arrow` over `ZIO Monad` in this test. This can be explained in a drastical reduce of memory allocations and polymorphic dispatch events on `JVM`.
 
 This emphasizes a poor performance of `Monad` computation due to excessive allocations and highlights an `Arrow` compositional semantics for the purpose of performance for the `JVM` ecosystem
