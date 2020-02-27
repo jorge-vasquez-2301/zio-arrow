@@ -1,6 +1,6 @@
 package zio.arrow
 
-import zio.IO
+import zio.{ IO, URIO }
 import zio.arrow.ZArrow._
 import zio.test.Assertion._
 import zio.test._
@@ -67,6 +67,12 @@ object ZArrowSpec
           },
           testM("`asEffect` returns the input value")(
             assertM(mul2.asEffect.run(56), equalTo(56))
+          ),
+          testM("`fromEffect` converts `ZIO` into `ZArrow`")(
+            assertM(ZArrow.fromEffect(zioAdd1).run(1), equalTo(2))
+          ),
+          testM("`toEffect` converts `ZArrow` into `ZIO`")(
+            assertM(add1.toEffect.provide(1), equalTo(2))
           ),
           testM("`test` check a condition and returns an Either output: Left if the condition is true otherwise false") {
             val tester = ZArrow.test(lift[List[Int], Boolean](_.sum > 10))
@@ -138,6 +144,8 @@ object ZArrowSpecUtil {
 
   val add1: ZArrow[Nothing, Int, Int] = ZArrow(plusOne)
   val mul2: ZArrow[Nothing, Int, Int] = ZArrow(mulTwo)
+
+  val zioAdd1: URIO[Int, Int] = URIO.access(plusOne)
 
   val greaterThan0 = ZArrow((_: Int) > 0)
   val lessThan10   = ZArrow((_: Int) < 10)

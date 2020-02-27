@@ -16,7 +16,7 @@
 
 package zio.arrow
 
-import zio.IO
+import zio.{ IO, ZIO }
 
 /**
  * A `ZArrow[E, A, B]` is an effectful function from `A` to `B`, which might
@@ -228,6 +228,11 @@ sealed trait ZArrow[+E, -A, +B] extends Serializable { self =>
    * effect, returning the input unmodified.
    */
   final def asEffect[A1 <: A]: ZArrow[E, A1, A1] = self.first >>> ZArrow._2
+
+  /**
+   * Converts `ZArrow` into `ZIO`.
+   */
+  final def toEffect: ZIO[A, E, B] = ZIO.accessM[A](self.run)
 }
 
 object ZArrow extends Serializable {
@@ -285,6 +290,11 @@ object ZArrow extends Serializable {
    * Alias for `lift`
    */
   def fromFunction[A, B](f: A => B): ZArrow[Nothing, A, B] = lift(f)
+
+  /**
+   * Converts `ZIO` into `ZArrow`.
+   */
+  def fromEffect[E, A, B](zio: ZIO[A, E, B]): ZArrow[E, A, B] = new Pure(zio.provide)
 
   /**
    * Returns an effectful function that merely swaps the elements in a `Tuple2`.
