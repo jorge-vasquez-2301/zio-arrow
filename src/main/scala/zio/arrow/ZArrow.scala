@@ -219,6 +219,11 @@ sealed trait ZArrow[+E, -A, +B] extends Serializable { self =>
     self >>> ZArrow.lift[B, C](_ => c)
 
   /**
+   * Converts `ZArrow` into `ZIO`.
+   */
+  final def toEffect: ZIO[A, E, B] = ZIO.accessM(self.run)
+
+  /**
    * Maps the output of this effectful function to `Unit`.
    */
   final def unit: ZArrow[E, A, Unit] = as(())
@@ -228,11 +233,6 @@ sealed trait ZArrow[+E, -A, +B] extends Serializable { self =>
    * effect, returning the input unmodified.
    */
   final def asEffect[A1 <: A]: ZArrow[E, A1, A1] = self.first >>> ZArrow._2
-
-  /**
-   * Converts `ZArrow` into `ZIO`.
-   */
-  final def toEffect: ZIO[A, E, B] = ZIO.accessM[A](self.run)
 }
 
 object ZArrow extends Serializable {
@@ -282,6 +282,11 @@ object ZArrow extends Serializable {
   def fromFunctionM[E, A, B](f: A => IO[E, B]): ZArrow[E, A, B] = liftM(f)
 
   /**
+   * Converts `ZIO` into `ZArrow`.
+   */
+  def fromEffect[E, A, B](zio: ZIO[A, E, B]): ZArrow[E, A, B] = fromFunctionM(zio.provide)
+
+  /**
    * Lifts a pure `A => B` into `ZArrow`.
    */
   def lift[A, B](f: A => B): ZArrow[Nothing, A, B] = new Impure(f)
@@ -290,11 +295,6 @@ object ZArrow extends Serializable {
    * Alias for `lift`
    */
   def fromFunction[A, B](f: A => B): ZArrow[Nothing, A, B] = lift(f)
-
-  /**
-   * Converts `ZIO` into `ZArrow`.
-   */
-  def fromEffect[E, A, B](zio: ZIO[A, E, B]): ZArrow[E, A, B] = new Pure(zio.provide)
 
   /**
    * Returns an effectful function that merely swaps the elements in a `Tuple2`.
