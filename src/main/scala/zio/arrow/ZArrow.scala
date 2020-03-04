@@ -247,8 +247,10 @@ object ZArrow extends Serializable {
   private[zio] final class Impure[+E, -A, +B](val apply0: A => B) extends ZArrow[E, A, B] {
     val run: A => IO[E, B] = a =>
       IO.effectSuspendTotal {
-        try IO.succeed[B](apply0(a))
-        catch {
+        try {
+          val b = apply0(a)
+          IO.succeed(b)
+        } catch {
           case e: ZArrowError[_] => IO.fail[E](e.unsafeCoerce[E])
         }
       }

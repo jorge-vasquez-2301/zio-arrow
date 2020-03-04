@@ -27,7 +27,7 @@ inThisBuild(
 
 ThisBuild / publishTo := sonatypePublishToBundle.value
 
-val zioVersion = "1.0.0-RC17"
+val zioVersion = "1.0.0-RC18"
 
 testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
 
